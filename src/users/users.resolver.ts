@@ -6,6 +6,8 @@ import { UserService } from './users.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/guard/gql-auth.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -36,6 +38,8 @@ export class UserResolver {
     }
 
     @Mutation(() => User)
+    @UseGuards(GqlAuthGuard, RolesGuard)
+    @Roles('ADMIN')
     removeUser(@Args('id', { type: () => String }) id: string) {
         return this.userService.remove(id);
     }
