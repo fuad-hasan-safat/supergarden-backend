@@ -6,12 +6,17 @@ import { Connection } from 'mongoose';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const connection = app.get<Connection>(getConnectionToken()); // default connection
+  const connection = app.get<Connection>(getConnectionToken());
   connection.once('open', () => {
     console.log('✅ MongoDB connected!');
   });
   connection.on('error', (err) => {
     console.error('❌ MongoDB connection error:', err);
+  });
+
+  app.enableCors({
+    origin: '*',
+    credentials: true,
   });
 
   await app.listen(3000);

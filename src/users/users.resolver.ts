@@ -8,6 +8,7 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/guard/gql-auth.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/auth/decorator/roles.decorator';
+import { ApolloError } from 'apollo-server-express';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -27,7 +28,7 @@ export class UserResolver {
         @Args('password') password: string,
     ) {
         const user = await this.userService.validateUser(email, password);
-        if (!user) throw new Error('Invalid credentials');
+        if (!user) throw new ApolloError('Invalid email or password', 'UNAUTHORIZED');
         const token = await this.authService.login(user);
         return token.access_token;
     }
