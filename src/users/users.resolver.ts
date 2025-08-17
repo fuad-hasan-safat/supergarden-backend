@@ -1,4 +1,5 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
+import { Response } from 'express';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -9,6 +10,7 @@ import { GqlAuthGuard } from 'src/auth/guard/gql-auth.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { ApolloError } from 'apollo-server-express';
+import { AuthPayload } from 'src/auth/dto/auth-payload';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -22,16 +24,22 @@ export class UserResolver {
         return this.userService.create(createUserInput);
     }
 
-    @Mutation(() => String)
-    async login(
+    @Mutation(() => AuthPayload)
+    async signin(
         @Args('email') email: string,
         @Args('password') password: string,
+        @Context('res') res: Response,
     ) {
+        console.log("SIGN IN CALLED")
         const user = await this.userService.validateUser(email, password);
-        if (!user) throw new ApolloError('Invalid email or password', 'UNAUTHORIZED');
+        if (!user) throw new ApolloError('Invalid credentials', 'UNAUTHORIZED');
+
         const token = await this.authService.login(user);
-        return token.access_token;
+        res.cookie('authToken', token.access_token, { httpOnly: true });
+
+        return token;
     }
+
 
     @Mutation(() => User)
     updateUser(@Args('updateUserInput') input: UpdateUserInput) {

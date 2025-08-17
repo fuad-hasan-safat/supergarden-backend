@@ -20,8 +20,10 @@ import { RolesGuard } from './auth/guard/roles.guard';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      // autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: true,
       playground: true,
+      context: ({ req, res }) => ({ req, res }),
     }),
 
     UserModule,
@@ -32,7 +34,7 @@ import { RolesGuard } from './auth/guard/roles.guard';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    
+
     AppService],
 })
 export class AppModule { }

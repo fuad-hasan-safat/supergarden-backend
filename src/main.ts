@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
@@ -14,8 +15,10 @@ async function bootstrap() {
     console.error('❌ MongoDB connection error:', err);
   });
 
+  app.use(cookieParser());
+
   app.enableCors({
-    origin: '*',
+     origin: "http://localhost:3001",
     credentials: true,
   });
 
