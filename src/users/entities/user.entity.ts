@@ -27,4 +27,16 @@ export class User {
 
   @Field(() => UserRole)
   role: UserRole;
+
+  @Field({ nullable: true })
+  profilePic?: string;
+
+  @Field({ nullable: true })
+  address?: string;
+
+  @Field({ nullable: true })
+  occupation?: string;
+
+  @Field({ nullable: true })
+  birthDate?: Date;
 }

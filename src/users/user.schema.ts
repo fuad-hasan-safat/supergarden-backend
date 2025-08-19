@@ -6,11 +6,12 @@ export type UserDocument = User & Document;
 export enum UserRole {
   USER = 'USER',
   ADMIN = 'ADMIN',
+  SELLER = 'SELLER'
 }
 
 @Schema({ timestamps: true })
 export class User {
-  
+
   @Prop({ required: true })
   name: string;
 
@@ -25,6 +26,18 @@ export class User {
 
   @Prop({ type: String, enum: UserRole, default: UserRole.USER })
   role: UserRole;
+
+  @Prop()
+  profilePic?: string; 
+
+  @Prop()
+  address?: string;
+
+  @Prop()
+  occupation?: string;
+
+  @Prop({ type: Date })
+  birthDate?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

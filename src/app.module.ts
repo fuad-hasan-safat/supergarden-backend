@@ -1,4 +1,3 @@
-import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,8 +6,9 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { UserModule } from './users/users.module';
-import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/guard/roles.guard';
+import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -18,11 +18,13 @@ import { RolesGuard } from './auth/guard/roles.guard';
       envFilePath: ['.env.development.local', '.env.development'],
       isGlobal: true,
     }),
+
+
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      // autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       autoSchemaFile: true,
       playground: true,
+      csrfPrevention: false,
       context: ({ req, res }) => ({ req, res }),
     }),
 

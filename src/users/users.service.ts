@@ -1,10 +1,10 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User, UserDocument } from './user.schema';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
@@ -12,17 +12,19 @@ export class UserService {
         @InjectModel(User.name) private userModel: Model<UserDocument>,
     ) { }
 
-    async create(input: CreateUserInput): Promise<User> {
-        const hashed = await bcrypt.hash(input.password, 10);
-        const created = new this.userModel({ ...input, password: hashed });
-        return created.save();
+    async create(createUserInput: CreateUserInput): Promise<User> {
+        const createdUser = new this.userModel(createUserInput);
+        return createdUser.save();
     }
+
 
     async validateUser(email: string, pass: string): Promise<(UserDocument & { _id: string }) | null> {
         const user = await this.userModel.findOne({ email }).exec();
+
         if (user && await bcrypt.compare(pass, user.password)) {
-            return user as UserDocument & { _id: string }; // tell TS: user._id exists
+            return user as UserDocument & { _id: string };
         }
+
         return null;
     }
 
@@ -38,7 +40,7 @@ export class UserService {
         return user;
     }
 
-    async update(updateUserInput: UpdateUserInput): Promise<User> {
+    async update(updateUserInput: UpdateUserInput): Promise<any> {
         const updatedUser = await this.userModel.findByIdAndUpdate(
             updateUserInput.id,
             updateUserInput,
