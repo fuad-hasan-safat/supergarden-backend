@@ -56,14 +56,18 @@ export class UserResolver {
     }
 
     @Mutation(() => User)
-    async updateUser(@Args('updateUserInput') input: UpdateUserInput) {
+    async updateUser(
+        @Args("id") id: string,
+        @Args('updateUserInput') updateUserInput: UpdateUserInput) {
+        console.log("🟢 update user ID :", id);
+        console.log("🟢 updateUserInput received:", updateUserInput);
 
-        console.log("🟢 updateUserInput received:", input);
+        const user = await this.userService.findOne(id);
 
-        const user = await this.userService.findOne(input.id);
-        if (!user) throw new NotFoundException(`User with id ${input.id} not found`);
+        console.log("USER: ", user)
+        if (!user) throw new NotFoundException(`User with id ${id} not found`);
 
-        return this.userService.update(input);
+    return this.userService.update({...updateUserInput, id});
     }
 
     @Mutation(() => User)
